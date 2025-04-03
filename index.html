@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Evader</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        .auth-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+        }
+        .auth-container h1 {
+            font-size: 30px;
+            margin-bottom: 20px;
+            color: #ff6f61;
+        }
+        .auth-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .auth-container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .auth-container button:hover {
+            background-color: #666;
+        }
+        .auth-message {
+            margin: 10px 0;
+            color: #ff6f61;
+            min-height: 20px;
+        }
+        .auth-toggle {
+            color: #2196f3;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: none;
+        }
+        .game-container.two-player {
+            display: flex;
+            flex-direction: row;
+        }
+        .player-area {
+            position: relative;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid white;
+        }
+        .player-area:last-child {
+            border-right: none;
+        }
+        .main-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            display: none;
+        }
+        .two-player-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            display: none;
+            background-color: rgba(70, 0, 110, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+        .main-menu h1 {
+            font-size: 50px;
+            margin-bottom: 20px;
+            color: #ff6f61;
+        }
+        .two-player-menu h1 {
+            font-size: 50px;
+            margin-bottom: 20px;
+            color: #ff69b4;
+        }
+        .main-menu button {
+            padding: 10px 20px;
+            font-size: 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .two-player-menu button {
+            padding: 10px 20px;
+            font-size: 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #8a2be2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .main-menu button:hover {
+            background-color: #666;
+        }
+        .two-player-menu button:hover {
+            background-color: #9932cc;
+        }
+        .shop {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .two-player-shop {
+            width: 90%;
+            max-width: 800px;
+            background-color: rgba(70, 0, 110, 0.9);
+        }
+        .shop-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+        .two-player-shop .shop-tabs {
+            border-bottom: 1px solid #ff69b4;
+        }
+        .shop-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #333;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .two-player-shop .shop-tab {
+            background-color: #4b0082;
+            color: white;
+        }
+        .shop-tab.active {
+            background-color: #555;
+        }
+        .two-player-shop .shop-tab.active {
+            background-color: #8a2be2;
+        }
+        .shop-content {
+            display: none;
+        }
+        .shop-content.active {
+            display: block;
+        }
+        .shop input {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        .shop button {
+            padding: 10px 20px;
+            font-size: 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .two-player-shop button {
+            background-color: #8a2be2;
+        }
+        .shop button:hover {
+            background-color: #666;
+        }
+        .two-player-shop button:hover {
+            background-color: #9932cc;
+        }
+        .player {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #ff6f61;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff6f61;
+        }
+        .player2 {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #2196F3;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #2196F3;
+        }
+        .obstacle {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #4caf50;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #4caf50;
+        }
+        .invincibility-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #2196f3;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #2196f3;
+        }
+        .gold-ball {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-color: gold;
+            border-radius: 50%;
+            box-shadow: 0 0 10px gold;
+        }
+        .score-board, .best-score-board, .timer-board, .lives-board, .player-score {
+            position: absolute;
+            font-size: 20px;
+            color: white;
+        }
+        .score-board {
+            left: 20px;
+            top: 20px;
+        }
+        .best-score-board {
+            right: 20px;
+            top: 20px;
+        }
+        .timer-board {
+            top: 50px;
+            right: 20px;
+        }
+        .lives-board {
+            top: 80px;
+            right: 20px;
+        }
+        .player1-score {
+            top: 20px;
+            left: 20px;
+        }
+        .player2-score {
+            top: 20px;
+            right: 20px;
+        }
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            color: white;
+            text-align: center;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+        .two-player-game-over {
+            width: 80%;
+            max-width: 600px;
+            background-color: rgba(70, 0, 110, 0.9);
+        }
+        .game-over button {
+            padding: 10px 20px;
+            font-size: 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .two-player-game-over button {
+            background-color: #8a2be2;
+        }
+        .game-over button:hover {
+            background-color: #666;
+        }
+        .two-player-game-over button:hover {
+            background-color: #9932cc;
+        }
+        .credits {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 16px;
+            color: white;
+        }
+        .skin-option {
+            padding: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid white;
+            display: inline-block;
+        }
+        .two-player-skin-option {
+            border-color: #ff69b4;
+        }
+        .current-user {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: white;
+        }
+        .two-player-current-user {
+            color: #ff69b4;
+        }
+        .account-picker {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            width: 300px;
+        }
+        .account-picker h2 {
+            color: #ff6f61;
+            margin-top: 0;
+        }
+        .account-option {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #333;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .account-option:hover {
+            background-color: #444;
+        }
+        .dooda-login-btn {
+            background-color: #4285F4 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+        .delete-account-btn {
+            background-color: #ff4444 !important;
+            margin-top: 30px !important;
+        }
+        .controls-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 16px;
+            color: white;
+        }
+        .player-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: white;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        .player1-label {
+            right: 10px;
+        }
+        .player2-label {
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication -->
+    <div class="auth-container" id="authContainer">
+        <h1>Cosmic Evader</h1>
+        <div id="loginForm">
+            <button id="doodaLoginBtn" class="dooda-login-btn">Login with Dooda</button>
+            <div style="margin: 15px 0; color: white;">OR</div>
+            <input type="text" id="loginUsername" placeholder="Username">
+            <input type="password" id="loginPassword" placeholder="Password">
+            <button id="loginBtn">Sign In</button>
+            <div class="auth-message" id="loginMessage"></div>
+            <div class="auth-toggle" id="showSignup">Don't have an account? Sign Up</div>
+        </div>
+        <div id="signupForm" style="display: none;">
+            <input type="text" id="signupUsername" placeholder="Username">
+            <input type="password" id="signupPassword" placeholder="Password">
+            <input type="password" id="signupConfirmPassword" placeholder="Confirm Password">
+            <button id="signupBtn">Sign Up</button>
+            <div class="auth-message" id="signupMessage"></div>
+            <div class="auth-toggle" id="showLogin">Already have an account? Sign In</div>
+        </div>
+    </div>
+
+    <!-- Account Picker -->
+    <div class="account-picker" id="accountPicker">
+        <h2>Choose an account</h2>
+        <div id="accountList"></div>
+        <button id="cancelAccountPicker">Cancel</button>
+    </div>
+
+    <!-- Single Player Main Menu -->
+    <div class="main-menu" id="mainMenu">
+        <h1>Cosmic Evader</h1>
+        <button id="startGameBtn">Start Game (Single Player)</button>
+        <button id="startTwoPlayerGameBtn">Start 2 Player Game</button>
+        <button id="showInstructionsBtn">How to Play</button>
+        <button id="showShopBtn">Shop</button>
+        <button id="deleteAccountBtn" class="delete-account-btn">Delete Account</button>
+        <button id="logoutBtn">Log Out</button>
+    </div>
+
+    <!-- Two Player Main Menu -->
+    <div class="two-player-menu" id="twoPlayerMenu" style="display: none;">
+        <h1>Cosmic Evader 2P</h1>
+        <button id="twoPlayerStartBtn">Start 2 Player Game</button>
+        <button id="twoPlayerShowShopBtn">2P Shop (70% OFF!)</button>
+        <button id="twoPlayerShowInstructionsBtn">How to Play</button>
+        <button id="twoPlayerBackBtn">Back to Main Menu</button>
+    </div>
+
+    <!-- Single Player Shop -->
+    <div class="shop" id="shop">
+        <h2>Shop</h2>
+        <p>Logged in as: <span id="currentUsername"></span></p>
+        <p>Your Best Score: <span id="shopBestScore">0</span></p>
+        <button id="buyExtraLifeBtn">Buy Extra Life (5000 points)</button>
+        <p id="shopMessage"></p>
+        <div id="skinOptions"></div>
+        <input type="text" id="secretCodeInput" placeholder="Enter secret code">
+        <button id="useSecretCodeBtn">Use Code</button>
+        <button id="hideShopBtn">Back to Main Menu</button>
+    </div>
+
+    <!-- Two Player Shop -->
+    <div class="shop two-player-shop" id="twoPlayerShop" style="display: none;">
+        <h2>2 Player Shop (70% OFF!)</h2>
+        <div class="shop-tabs">
+            <div class="shop-tab active" data-tab="player1">Player 1</div>
+            <div class="shop-tab" data-tab="player2">Player 2</div>
+        </div>
+        
+        <div class="shop-content active" id="player1ShopContent">
+            <h3>Player 1</h3>
+            <p>Best Score: <span id="player1ShopBestScore">0</span></p>
+            <button id="buyPlayer1ExtraLifeBtn">Buy Extra Life (1500 points)</button>
+            <p id="player1ShopMessage"></p>
+            <div id="player1SkinOptions"></div>
+        </div>
+        
+        <div class="shop-content" id="player2ShopContent">
+            <h3>Player 2</h3>
+            <p>Best Score: <span id="player2ShopBestScore">0</span></p>
+            <button id="buyPlayer2ExtraLifeBtn">Buy Extra Life (1500 points)</button>
+            <p id="player2ShopMessage"></p>
+            <div id="player2SkinOptions"></div>
+        </div>
+        
+        <input type="text" id="twoPlayerSecretCodeInput" placeholder="Enter secret code">
+        <button id="useTwoPlayerSecretCodeBtn">Use Code</button>
+        <button id="hideTwoPlayerShopBtn">Back to Menu</button>
+    </div>
+
+    <!-- Single Player Game Container -->
+    <div class="game-container" id="gameContainer">
+        <div class="current-user" id="currentUserDisplay"></div>
+        <div class="score-board" id="score">Score: 0</div>
+        <div class="best-score-board" id="bestScore">Best Score: 0</div>
+        <div class="timer-board" id="timer">Invincibility: 0</div>
+        <div class="lives-board" id="lives">Lives: 0</div>
+        <div class="game-over" id="gameOver">
+            Game Over!
+            <button id="restartGameBtn">Play Again</button>
+            <button id="returnToMainMenuBtn">Main Menu</button>
+        </div>
+        <div id="player" class="player"></div>
+        <div class="credits" id="credits">Developed by Adam</div>
+    </div>
+
+    <!-- Two Player Game Container -->
+    <div class="game-container two-player" id="twoPlayerGameContainer" style="display: none;">
+        <div class="player-area" id="player1Area">
+            <div class="player1-score" id="player1Score">Player 1: 0</div>
+            <div class="controls-info">Controls: WASD</div>
+            <div class="player-label player1-label">PLAYER 1</div>
+            <div id="player1" class="player"></div>
+        </div>
+        <div class="player-area" id="player2Area">
+            <div class="player2-score" id="player2Score">Player 2: 0</div>
+            <div class="controls-info">Controls: Arrow Keys</div>
+            <div class="player-label player2-label">PLAYER 2</div>
+            <div id="player2" class="player2"></div>
+        </div>
+        <div class="game-over two-player-game-over" id="twoPlayerGameOver">
+            <div id="twoPlayerGameOverMessage"></div>
+            <button id="restartTwoPlayerGameBtn">Play Again</button>
+            <button id="returnToTwoPlayerMenuBtn">2P Menu</button>
+        </div>
+        <div class="credits" id="twoPlayerCredits">Developed by Adam</div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 600px; width: 80%;">
+        <h2>How to Play</h2>
+        <h3>Single Player Mode</h3>
+        <p>Move your mouse to control the red circle.</p>
+        <p>Avoid the green circles and collect blue circles to become invincible for 5 seconds.</p>
+        <p>Collect gold circles for bonus points.</p>
+        <p>Survive as long as possible to increase your score!</p>
+        
+        <h3>Two Player Mode</h3>
+        <p>Player 1 (Left Screen): Use WASD keys to move</p>
+        <p>Player 2 (Right Screen): Use Arrow keys to move</p>
+        <p>Both players compete to get the highest score while avoiding obstacles</p>
+        <p>The game ends when one player hits an obstacle</p>
+        
+        <h3>Shop Info</h3>
+        <p>You can buy extra lives in the shop using your best score points.</p>
+        <p>Each extra life costs <strong>5000 points</strong> in single player and <strong>1500 points</strong> in two player mode.</p>
+        <p>Extra lives allow you to continue playing after losing, keeping your current score.</p>
+        <p>In 2-player mode, each player has their own shop with separate scores and skins.</p>
+        <button id="hideInstructionsBtn">Close</button>
+    </div>
+
+    <script>
+        // User Authentication System
+        const users = JSON.parse(localStorage.getItem('cosmicEvaderUsers')) || {};
+        let currentUser = null;
+
+        // DOM Elements
+        const authContainer = document.getElementById('authContainer');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const loginUsername = document.getElementById('loginUsername');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginMessage = document.getElementById('loginMessage');
+        const showSignup = document.getElementById('showSignup');
+        const signupUsername = document.getElementById('signupUsername');
+        const signupPassword = document.getElementById('signupPassword');
+        const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+        const signupBtn = document.getElementById('signupBtn');
+        const signupMessage = document.getElementById('signupMessage');
+        const showLogin = document.getElementById('showLogin');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+        const currentUsername = document.getElementById('currentUsername');
+        const currentUserDisplay = document.getElementById('currentUserDisplay');
+        const doodaLoginBtn = document.getElementById('doodaLoginBtn');
+        const accountPicker = document.getElementById('accountPicker');
+        const accountList = document.getElementById('accountList');
+        const cancelAccountPicker = document.getElementById('cancelAccountPicker');
+
+        const gameContainer = document.getElementById('gameContainer');
+        const twoPlayerGameContainer = document.getElementById('twoPlayerGameContainer');
+        const mainMenu = document.getElementById('mainMenu');
+        const twoPlayerMenu = document.getElementById('twoPlayerMenu');
+        const shop = document.getElementById('shop');
+        const twoPlayerShop = document.getElementById('twoPlayerShop');
+        const shopBestScore = document.getElementById('shopBestScore');
+        const player1ShopBestScore = document.getElementById('player1ShopBestScore');
+        const player2ShopBestScore = document.getElementById('player2ShopBestScore');
+        const shopMessage = document.getElementById('shopMessage');
+        const player1ShopMessage = document.getElementById('player1ShopMessage');
+        const player2ShopMessage = document.getElementById('player2ShopMessage');
+        const secretCodeInput = document.getElementById('secretCodeInput');
+        const twoPlayerSecretCodeInput = document.getElementById('twoPlayerSecretCodeInput');
+        const player = document.getElementById('player');
+        const player1 = document.getElementById('player1');
+        const player2 = document.getElementById('player2');
+        const scoreDisplay = document.getElementById('score');
+        const bestScoreDisplay = document.getElementById('bestScore');
+        const timerDisplay = document.getElementById('timer');
+        const livesDisplay = document.getElementById('lives');
+        const gameOverMessage = document.getElementById('gameOver');
+        const twoPlayerGameOverMessage = document.getElementById('twoPlayerGameOver');
+        const twoPlayerGameOverMessageText = document.getElementById('twoPlayerGameOverMessage');
+        const player1ScoreDisplay = document.getElementById('player1Score');
+        const player2ScoreDisplay = document.getElementById('player2Score');
+        
+        // Buttons
+        const startGameBtn = document.getElementById('startGameBtn');
+        const startTwoPlayerGameBtn = document.getElementById('startTwoPlayerGameBtn');
+        const twoPlayerStartBtn = document.getElementById('twoPlayerStartBtn');
+        const showInstructionsBtn = document.getElementById('showInstructionsBtn');
+        const twoPlayerShowInstructionsBtn = document.getElementById('twoPlayerShowInstructionsBtn');
+        const showShopBtn = document.getElementById('showShopBtn');
+        const twoPlayerShowShopBtn = document.getElementById('twoPlayerShowShopBtn');
+        const buyExtraLifeBtn = document.getElementById('buyExtraLifeBtn');
+        const buyPlayer1ExtraLifeBtn = document.getElementById('buyPlayer1ExtraLifeBtn');
+        const buyPlayer2ExtraLifeBtn = document.getElementById('buyPlayer2ExtraLifeBtn');
+        const useSecretCodeBtn = document.getElementById('useSecretCodeBtn');
+        const useTwoPlayerSecretCodeBtn = document.getElementById('useTwoPlayerSecretCodeBtn');
+        const hideShopBtn = document.getElementById('hideShopBtn');
+        const hideTwoPlayerShopBtn = document.getElementById('hideTwoPlayerShopBtn');
+        const restartGameBtn = document.getElementById('restartGameBtn');
+        const restartTwoPlayerGameBtn = document.getElementById('restartTwoPlayerGameBtn');
+        const returnToMainMenuBtn = document.getElementById('returnToMainMenuBtn');
+        const returnToTwoPlayerMenuBtn = document.getElementById('returnToTwoPlayerMenuBtn');
+        const twoPlayerBackBtn = document.getElementById('twoPlayerBackBtn');
+        const hideInstructionsBtn = document.getElementById('hideInstructionsBtn');
+        const instructionsModal = document.getElementById('instructionsModal');
+
+        // Shop tabs
+        const shopTabs = document.querySelectorAll('.shop-tab');
+        const shopContents = document.querySelectorAll('.shop-content');
+
+        // Game variables
+        let score = 0;
+        let player1Score = 0;
+        let player2Score = 0;
+        let playerPosition = { x: 0, y: 0 };
+        let player1Position = { x: 0, y: 0 };
+        let player2Position = { x: 0, y: 0 };
+        let gameOver = false;
+        let twoPlayerGameOver = false;
+        let obstacles = [];
+        let twoPlayerObstacles = [];
+        let invincible = false;
+        let player1Invincible = false;
+        let player2Invincible = false;
+        let invincibilityTime = 0;
+        let player1InvincibilityTime = 0;
+        let player2InvincibilityTime = 0;
+        let invincibilityBalls = [];
+        let twoPlayerInvincibilityBalls = [];
+        let goldBalls = [];
+        let twoPlayerGoldBalls = [];
+        let invincibilityInterval;
+        let player1InvincibilityInterval;
+        let player2InvincibilityInterval;
+        let fallSpeed = 5;
+        let twoPlayerFallSpeed = 5;
+        let obstacleSpawnRate = 0.05;
+        let twoPlayerObstacleSpawnRate = 0.05;
+        let invincibilityBallSpawnRate = 0.005;
+        let twoPlayerInvincibilityBallSpawnRate = 0.005;
+        let goldBallSpawnRate = 0.01;  
+        let twoPlayerGoldBallSpawnRate = 0.01;
+        let bestScore = 0;
+        let player1BestScore = 0;
+        let player2BestScore = 0;
+        let lives = 0;
+        let player1Lives = 0;
+        let player2Lives = 0;
+        let isTwoPlayerMode = false;
+
+        // Player movement keys
+        const keys = {
+            w: false,
+            a: false,
+            s: false,
+            d: false,
+            ArrowUp: false,
+            ArrowDown: false,
+            ArrowLeft: false,
+            ArrowRight: false
+        };
+
+        const SKINS = [
+            { color: '#ff6f61', cost: 0 }, // Default (free)
+            { color: '#331900', cost: 2000 }, // Coral
+            { color: '#6495ED', cost: 3000 }, // Cornflower Blue
+            { color: '#FFFF99', cost: 4000 }, // Gold
+            { color: '#ADFF2F', cost: 5000 }, // Green Yellow
+            { color: '#FF69B4', cost: 6000 }, // Hot Pink
+            { color: '#DDA0DD', cost: 7000 }, // Plum
+            { color: '#B0E0E6', cost: 8000 }, // Powder Blue
+            { color: '#FF4500', cost: 9000 }, // Orange Red
+            { color: '#00FA9A', cost: 10000 }, // Medium Spring Green
+        ];
+
+        // Two player skins with 70% reduced cost
+        const TWO_PLAYER_SKINS = [
+            { color: '#ff6f61', cost: 0 }, // Default (free)
+            { color: '#331900', cost: 600 }, // Coral
+            { color: '#6495ED', cost: 900 }, // Cornflower Blue
+            { color: '#FFFF99', cost: 1200 }, // Gold
+            { color: '#ADFF2F', cost: 1500 }, // Green Yellow
+            { color: '#FF69B4', cost: 1800 }, // Hot Pink
+            { color: '#DDA0DD', cost: 2100 }, // Plum
+            { color: '#B0E0E6', cost: 2400 }, // Powder Blue
+            { color: '#FF4500', cost: 2700 }, // Orange Red
+            { color: '#00FA9A', cost: 3000 }, // Medium Spring Green
+        ];
+
+        // Authentication Functions
+        const showLoginForm = () => {
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+            loginMessage.textContent = '';
+        };
+
+        const showSignupForm = () => {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+            signupMessage.textContent = '';
+        };
+
+        const showAccountPicker = () => {
+            accountList.innerHTML = '';
+            
+            // Get all saved accounts
+            const savedAccounts = Object.keys(users);
+            
+            if (savedAccounts.length === 0) {
+                accountList.innerHTML = '<p>No saved accounts found</p>';
+            } else {
+                savedAccounts.forEach(username => {
+                    const accountDiv = document.createElement('div');
+                    accountDiv.className = 'account-option';
+                    accountDiv.textContent = username;
+                    accountDiv.onclick = () => {
+                        loginWithDooda(username);
+                    };
+                    accountList.appendChild(accountDiv);
+                });
+            }
+            
+            accountPicker.style.display = 'block';
+            authContainer.style.display = 'none';
+        };
+
+        const hideAccountPicker = () => {
+            accountPicker.style.display = 'none';
+            authContainer.style.display = 'block';
+        };
+
+        const loginWithDooda = (username) => {
+            if (!users[username]) {
+                alert('Account not found');
+                return;
+            }
+
+            // Successful login
+            currentUser = username;
+            authContainer.style.display = 'none';
+            accountPicker.style.display = 'none';
+            mainMenu.style.display = 'block';
+            loadUserData();
+        };
+
+        const login = () => {
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value.trim();
+
+            if (!username || !password) {
+                loginMessage.textContent = 'Please enter both username and password';
+                return;
+            }
+
+            if (!users[username]) {
+                loginMessage.textContent = 'Username not found';
+                return;
+            }
+
+            if (users[username].password !== password) {
+                loginMessage.textContent = 'Incorrect password';
+                return;
+            }
+
+            // Successful login
+            currentUser = username;
+            authContainer.style.display = 'none';
+            mainMenu.style.display = 'block';
+            loadUserData();
+        };
+
+        const signup = () => {
+            const username = signupUsername.value.trim();
+            const password = signupPassword.value.trim();
+            const confirmPassword = signupConfirmPassword.value.trim();
+
+            if (!username || !password || !confirmPassword) {
+                signupMessage.textContent = 'Please fill all fields';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                signupMessage.textContent = 'Passwords do not match';
+                return;
+            }
+
+            if (users[username]) {
+                signupMessage.textContent = 'Username already exists';
+                return;
+            }
+
+            // Create new user
+            users[username] = {
+                password: password,
+                bestScore: 0,
+                lives: 0,
+                skin: '#ff6f61',
+                purchasedSkins: ['#ff6f61'],
+                // Two player data
+                player1BestScore: 0,
+                player2BestScore: 0,
+                player1Lives: 0,
+                player2Lives: 0,
+                player1Skin: '#ff6f61',
+                player2Skin: '#2196F3',
+                player1PurchasedSkins: ['#ff6f61'],
+                player2PurchasedSkins: ['#2196F3']
+            };
+
+            localStorage.setItem('cosmicEvaderUsers', JSON.stringify(users));
+            signupMessage.textContent = 'Account created successfully!';
+            showLoginForm();
+        };
+
+        const logout = () => {
+            currentUser = null;
+            mainMenu.style.display = 'none';
+            authContainer.style.display = 'block';
+            showLoginForm();
+        };
+
+        const deleteAccount = () => {
+            if (!currentUser) return;
+            
+            if (confirm('Are you sure you want to delete your account? This cannot be undone!')) {
+                delete users[currentUser];
+                localStorage.setItem('cosmicEvaderUsers', JSON.stringify(users));
+                alert('Account deleted successfully');
+                logout();
+            }
+        };
+
+        const loadUserData = () => {
+            if (!currentUser) return;
+            
+            const user = users[currentUser];
+            bestScore = user.bestScore || 0;
+            lives = user.lives || 0;
+            player.style.backgroundColor = user.skin || '#ff6f61';
+            
+            // Two player data
+            player1BestScore = user.player1BestScore || 0;
+            player2BestScore = user.player2BestScore || 0;
+            player1Lives = user.player1Lives || 0;
+            player2Lives = user.player2Lives || 0;
+            player1.style.backgroundColor = user.player1Skin || '#ff6f61';
+            player2.style.backgroundColor = user.player2Skin || '#2196F3';
+            
+            currentUsername.textContent = currentUser;
+            currentUserDisplay.textContent = `Player: ${currentUser}`;
+            updateBestScoreDisplay();
+        };
+
+        const saveUserData = () => {
+            if (!currentUser) return;
+            
+            const user = users[currentUser];
+            user.bestScore = bestScore;
+            user.lives = lives;
+            user.skin = player.style.backgroundColor;
+            
+            // Two player data
+            user.player1BestScore = player1BestScore;
+            user.player2BestScore = player2BestScore;
+            user.player1Lives = player1Lives;
+            user.player2Lives = player2Lives;
+            user.player1Skin = player1.style.backgroundColor;
+            user.player2Skin = player2.style.backgroundColor;
+            
+            localStorage.setItem('cosmicEvaderUsers', JSON.stringify(users));
+        };
+
+        // Helper function to update best score display
+        const updateBestScoreDisplay = () => {
+            shopBestScore.textContent = bestScore;
+            player1ShopBestScore.textContent = player1BestScore;
+            player2ShopBestScore.textContent = player2BestScore;
+            bestScoreDisplay.textContent = `Best Score: ${bestScore}`;
+            livesDisplay.textContent = `Lives: ${lives}`;
+        };
+
+        // Populate skin options in the shop
+        const populateSkinOptions = () => {
+            if (!currentUser) return;
+            
+            const skinOptionsContainer = document.getElementById('skinOptions');
+            const player1SkinOptionsContainer = document.getElementById('player1SkinOptions');
+            const player2SkinOptionsContainer = document.getElementById('player2SkinOptions');
+            
+            skinOptionsContainer.innerHTML = '<h3>Skins</h3>';
+            player1SkinOptionsContainer.innerHTML = '<h4>Skins</h4>';
+            player2SkinOptionsContainer.innerHTML = '<h4>Skins</h4>';
+            
+            const user = users[currentUser];
+            const purchasedSkins = user.purchasedSkins || [];
+            const player1PurchasedSkins = user.player1PurchasedSkins || [];
+            const player2PurchasedSkins = user.player2PurchasedSkins || [];
+            
+            const skinsToUse = isTwoPlayerMode ? TWO_PLAYER_SKINS : SKINS;
+            
+            skinsToUse.forEach((skin) => {
+                // Single player skins
+                const skinDiv = document.createElement('div');
+                skinDiv.className = isTwoPlayerMode ? 'skin-option two-player-skin-option' : 'skin-option';
+                skinDiv.style.backgroundColor = skin.color;
+                skinDiv.style.width = '50px';
+                skinDiv.style.height = '50px';
+                
+                if (purchasedSkins.includes(skin.color)) {
+                    skinDiv.textContent = 'OWNED';
+                    if (user.skin === skin.color) {
+                        skinDiv.textContent = 'EQUIPPED';
+                        skinDiv.style.border = '2px solid gold';
+                    }
+                } else {
+                    skinDiv.textContent = `${skin.cost} pts`;
+                }
+                
+                skinDiv.style.display = 'inline-block';
+                skinDiv.onclick = () => buySkin(skin);
+                skinOptionsContainer.appendChild(skinDiv);
+                
+                // Player 1 skins
+                const player1SkinDiv = document.createElement('div');
+                player1SkinDiv.className = isTwoPlayerMode ? 'skin-option two-player-skin-option' : 'skin-option';
+                player1SkinDiv.style.backgroundColor = skin.color;
+                player1SkinDiv.style.width = '50px';
+                player1SkinDiv.style.height = '50px';
+                
+                if (player1PurchasedSkins.includes(skin.color)) {
+                    player1SkinDiv.textContent = 'OWNED';
+                    if (user.player1Skin === skin.color) {
+                        player1SkinDiv.textContent = 'EQUIPPED';
+                        player1SkinDiv.style.border = '2px solid gold';
+                    }
+                } else {
+                    player1SkinDiv.textContent = `${skin.cost} pts`;
+                }
+                
+                player1SkinDiv.style.display = 'inline-block';
+                player1SkinDiv.onclick = () => buyPlayer1Skin(skin);
+                player1SkinOptionsContainer.appendChild(player1SkinDiv);
+                
+                // Player 2 skins
+                const player2SkinDiv = document.createElement('div');
+                player2SkinDiv.className = isTwoPlayerMode ? 'skin-option two-player-skin-option' : 'skin-option';
+                player2SkinDiv.style.backgroundColor = skin.color;
+                player2SkinDiv.style.width = '50px';
+                player2SkinDiv.style.height = '50px';
+                
+                if (player2PurchasedSkins.includes(skin.color)) {
+                    player2SkinDiv.textContent = 'OWNED';
+                    if (user.player2Skin === skin.color) {
+                        player2SkinDiv.textContent = 'EQUIPPED';
+                        player2SkinDiv.style.border = '2px solid gold';
+                    }
+                } else {
+                    player2SkinDiv.textContent = `${skin.cost} pts`;
+                }
+                
+                player2SkinDiv.style.display = 'inline-block';
+                player2SkinDiv.onclick = () => buyPlayer2Skin(skin);
+                player2SkinOptionsContainer.appendChild(player2SkinDiv);
+            });
+        };
+
+        // Main Menu Functions
+        const startGame = () => {
+            isTwoPlayerMode = false;
+            mainMenu.style.display = 'none';
+            gameContainer.style.display = 'block';
+            restartGame();
+        };
+
+        const startTwoPlayerGame = () => {
+            isTwoPlayerMode = true;
+            mainMenu.style.display = 'none';
+            twoPlayerMenu.style.display = 'block';
+        };
+
+        const showTwoPlayerGame = () => {
+            twoPlayerMenu.style.display = 'none';
+            twoPlayerGameContainer.style.display = 'flex';
+            restartTwoPlayerGame();
+        };
+
+        const showInstructions = () => {
+            instructionsModal.style.display = 'block';
+        };
+
+        const hideInstructions = () => {
+            instructionsModal.style.display = 'none';
+        };
+
+        const showShop = () => {
+            mainMenu.style.display = 'none';
+            shop.style.display = 'block';
+            updateBestScoreDisplay(); 
+            populateSkinOptions();
+        };
+
+        const showTwoPlayerShop = () => {
+            twoPlayerMenu.style.display = 'none';
+            twoPlayerShop.style.display = 'block';
+            updateBestScoreDisplay();
+            populateSkinOptions();
+        };
+
+        const hideShop = () => {
+            shop.style.display = 'none';
+            mainMenu.style.display = 'block';
+        };
+
+        const hideTwoPlayerShop = () => {
+            twoPlayerShop.style.display = 'none';
+            twoPlayerMenu.style.display = 'block';
+        };
+
+        const returnToTwoPlayerMenu = () => {
+            twoPlayerGameContainer.style.display = 'none';
+            twoPlayerGameOverMessage.style.display = 'none';
+            twoPlayerMenu.style.display = 'block';
+        };
+
+        const returnToMainMenuFromTwoPlayer = () => {
+            twoPlayerMenu.style.display = 'none';
+            mainMenu.style.display = 'block';
+        };
+
+        const buyExtraLife = () => {
+            if (!currentUser) return;
+            
+            if (bestScore >= 5000) {
+                bestScore -= 5000;
+                lives++;
+                saveUserData();
+                updateBestScoreDisplay();
+                shopMessage.textContent = "Extra life purchased!";
+            } else {
+                shopMessage.textContent = "Not enough points!";
+            }
+        };
+
+        const buyPlayer1ExtraLife = () => {
+            if (!currentUser) return;
+            
+            if (player1BestScore >= 1500) {
+                player1BestScore -= 1500;
+                player1Lives++;
+                saveUserData();
+                updateBestScoreDisplay();
+                player1ShopMessage.textContent = "Extra life purchased for Player 1!";
+            } else {
+                player1ShopMessage.textContent = "Not enough points!";
+            }
+        };
+
+        const buyPlayer2ExtraLife = () => {
+            if (!currentUser) return;
+            
+            if (player2BestScore >= 1500) {
+                player2BestScore -= 1500;
+                player2Lives++;
+                saveUserData();
+                updateBestScoreDisplay();
+                player2ShopMessage.textContent = "Extra life purchased for Player 2!";
+            } else {
+                player2ShopMessage.textContent = "Not enough points!";
+            }
+        };
+
+        const buySkin = (skin) => {
+            if (!currentUser) return;
+            
+            const user = users[currentUser];
+            const purchasedSkins = user.purchasedSkins || [];
+            
+            if (purchasedSkins.includes(skin.color)) {
+                // Already owned, just equip it
+                user.skin = skin.color;
+                player.style.backgroundColor = skin.color;
+                saveUserData();
+                populateSkinOptions();
+                shopMessage.textContent = "Skin equipped!";
+                return;
+            }
+            
+            if (bestScore >= skin.cost) {
+                bestScore -= skin.cost;
+                user.skin = skin.color;
+                if (!purchasedSkins.includes(skin.color)) {
+                    user.purchasedSkins.push(skin.color);
+                }
+                player.style.backgroundColor = skin.color;
+                saveUserData();
+                updateBestScoreDisplay();
+                populateSkinOptions();
+                shopMessage.textContent = "Skin purchased and equipped!";
+            } else {
+                shopMessage.textContent = "Not enough points!";
+            }
+        };
+
+        const buyPlayer1Skin = (skin) => {
+            if (!currentUser) return;
+            
+            const user = users[currentUser];
+            const purchasedSkins = user.player1PurchasedSkins || [];
+            
+            if (purchasedSkins.includes(skin.color)) {
+                // Already owned, just equip it
+                user.player1Skin = skin.color;
+                player1.style.backgroundColor = skin.color;
+                saveUserData();
+                populateSkinOptions();
+                player1ShopMessage.textContent = "Skin equipped for Player 1!";
+                return;
+            }
+            
+            if (player1BestScore >= skin.cost) {
+                player1BestScore -= skin.cost;
+                user.player1Skin = skin.color;
+                if (!user.player1PurchasedSkins) {
+                    user.player1PurchasedSkins = [];
+                }
+                if (!user.player1PurchasedSkins.includes(skin.color)) {
+                    user.player1PurchasedSkins.push(skin.color);
+                }
+                player1.style.backgroundColor = skin.color;
+                saveUserData();
+                updateBestScoreDisplay();
+                populateSkinOptions();
+                player1ShopMessage.textContent = "Skin purchased and equipped for Player 1!";
+            } else {
+                player1ShopMessage.textContent = "Not enough points!";
+            }
+        };
+
+        const buyPlayer2Skin = (skin) => {
+            if (!currentUser) return;
+            
+            const user = users[currentUser];
+            const purchasedSkins = user.player2PurchasedSkins || [];
+            
+            if (purchasedSkins.includes(skin.color)) {
+                // Already owned, just equip it
+                user.player2Skin = skin.color;
+                player2.style.backgroundColor = skin.color;
+                saveUserData();
+                populateSkinOptions();
+                player2ShopMessage.textContent = "Skin equipped for Player 2!";
+                return;
+            }
+            
+            if (player2BestScore >= skin.cost) {
+                player2BestScore -= skin.cost;
+                user.player2Skin = skin.color;
+                if (!user.player2PurchasedSkins) {
+                    user.player2PurchasedSkins = [];
+                }
+                if (!user.player2PurchasedSkins.includes(skin.color)) {
+                    user.player2PurchasedSkins.push(skin.color);
+                }
+                player2.style.backgroundColor = skin.color;
+                saveUserData();
+                updateBestScoreDisplay();
+                populateSkinOptions();
+                player2ShopMessage.textContent = "Skin purchased and equipped for Player 2!";
+            } else {
+                player2ShopMessage.textContent = "Not enough points!";
+            }
+        };
+
+        const useSecretCode = () => {
+            if (!currentUser) return;
+            
+            if (secretCodeInput.value === "0852") {
+                bestScore += 5000;
+                saveUserData();
+                updateBestScoreDisplay();
+                shopMessage.textContent = "5000 points added!";
+                secretCodeInput.value = ""; 
+            } else {
+                shopMessage.textContent = "Invalid code!";
+            }
+        };
+
+        const useTwoPlayerSecretCode = () => {
+            if (!currentUser) return;
+            
+            if (twoPlayerSecretCodeInput.value === "0852") {
+                // Get active tab
+                const activeTab = document.querySelector('.shop-tab.active').dataset.tab;
+                
+                if (activeTab === 'player1') {
+                    player1BestScore += 1500;
+                    player1ShopMessage.textContent = "1500 points added to Player 1!";
+                } else {
+                    player2BestScore += 1500;
+                    player2ShopMessage.textContent = "1500 points added to Player 2!";
+                }
+                
+                saveUserData();
+                updateBestScoreDisplay();
+                twoPlayerSecretCodeInput.value = ""; 
+            } else {
+                player1ShopMessage.textContent = "Invalid code!";
+                player2ShopMessage.textContent = "Invalid code!";
+            }
+        };
+
+        const returnToMainMenu = () => {
+            gameContainer.style.display = 'none';
+            mainMenu.style.display = 'block';
+            gameOverMessage.style.display = 'none';
+        };
+
+        // Game Logic
+        const randomPosition = (container) => {
+            const x = Math.floor(Math.random() * (container.clientWidth - 30));
+            return x;
+        };
+
+        const createObstacle = (container) => {
+            const obstacle = document.createElement('div');
+            obstacle.classList.add('obstacle');
+            obstacle.style.left = `${randomPosition(container)}px`;
+            obstacle.style.top = '-30px';
+            container.appendChild(obstacle);
+            return obstacle;
+        };
+
+        const createInvincibilityBall = (container) => {
+            const ball = document.createElement('div');
+            ball.classList.add('invincibility-ball');
+            ball.style.left = `${randomPosition(container)}px`;
+            ball.style.top = '-20px';
+            container.appendChild(ball);
+            return ball;
+        };
+
+        const createGoldBall = (container) => {
+            const goldBall = document.createElement('div');
+            goldBall.classList.add('gold-ball');
+            goldBall.style.left = `${randomPosition(container)}px`;
+            goldBall.style.top = '-25px';
+            container.appendChild(goldBall);
+            return goldBall;
+        };
+
+        const movePlayer = (e) => {
+            if (!gameOver && !isTwoPlayerMode) {
+                playerPosition.x = e.clientX - 15;
+                playerPosition.y = e.clientY - 15;
+                player.style.left = `${playerPosition.x}px`;
+                player.style.top = `${playerPosition.y}px`;
+            }
+        };
+
+        const movePlayerWithKeys = () => {
+            if (twoPlayerGameOver) return;
+            
+            // Player 1 movement (WASD)
+            if (keys.w && player1Position.y > 0) {
+                player1Position.y -= 5;
+            }
+            if (keys.s && player1Position.y < player1Area.clientHeight - 30) {
+                player1Position.y += 5;
+            }
+            if (keys.a && player1Position.x > 0) {
+                player1Position.x -= 5;
+            }
+            if (keys.d && player1Position.x < player1Area.clientWidth - 30) {
+                player1Position.x += 5;
+            }
+            
+            // Player 2 movement (Arrow keys)
+            if (keys.ArrowUp && player2Position.y > 0) {
+                player2Position.y -= 5;
+            }
+            if (keys.ArrowDown && player2Position.y < player2Area.clientHeight - 30) {
+                player2Position.y += 5;
+            }
+            if (keys.ArrowLeft && player2Position.x > 0) {
+                player2Position.x -= 5;
+            }
+            if (keys.ArrowRight && player2Position.x < player2Area.clientWidth - 30) {
+                player2Position.x += 5;
+            }
+            
+            player1.style.left = `${player1Position.x}px`;
+            player1.style.top = `${player1Position.y}px`;
+            player2.style.left = `${player2Position.x}px`;
+            player2.style.top = `${player2Position.y}px`;
+        };
+
+        const updateObstacles = () => {
+            obstacles.forEach((obstacle, index) => {
+                const currentTop = parseInt(obstacle.style.top);
+                if (currentTop > gameContainer.clientHeight) {
+                    gameContainer.removeChild(obstacle);
+                    obstacles.splice(index, 1);
+                    score += 10;
+                    scoreDisplay.textContent = `Score: ${score}`;
+
+                    if (score % 500 === 0) {
+                        fallSpeed *= 1.2;
+                    }
+
+                    if (score % 1000 === 0) {
+                        obstacleSpawnRate *= 1.2;
+                        invincibilityBallSpawnRate *= 1.2;
+                        goldBallSpawnRate *= 1.2; 
+                    }
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestScoreDisplay.textContent = `Best Score: ${bestScore}`;
+                        saveUserData();
+                    }
+                } else {
+                    obstacle.style.top = `${currentTop + fallSpeed}px`;
+                    checkCollision(obstacle, index);
+                }
+            });
+        };
+
+        const updateTwoPlayerObstacles = () => {
+            twoPlayerObstacles.forEach((obstacle, index) => {
+                const currentTop = parseInt(obstacle.style.top);
+                const container = obstacle.parentElement;
+                
+                if (currentTop > container.clientHeight) {
+                    container.removeChild(obstacle);
+                    twoPlayerObstacles.splice(index, 1);
+                    
+                    // Update score based on which player's area the obstacle was in
+                    if (container.id === 'player1Area') {
+                        player1Score += 10;
+                        player1ScoreDisplay.textContent = `Player 1: ${player1Score}`;
+                        if (player1Score > player1BestScore) {
+                            player1BestScore = player1Score;
+                            player1ShopBestScore.textContent = player1BestScore;
+                            saveUserData();
+                        }
+                    } else {
+                        player2Score += 10;
+                        player2ScoreDisplay.textContent = `Player 2: ${player2Score}`;
+                        if (player2Score > player2BestScore) {
+                            player2BestScore = player2Score;
+                            player2ShopBestScore.textContent = player2BestScore;
+                            saveUserData();
+                        }
+                    }
+
+                    if (player1Score % 500 === 0 || player2Score % 500 === 0) {
+                        twoPlayerFallSpeed *= 1.2;
+                    }
+
+                    if (player1Score % 1000 === 0 || player2Score % 1000 === 0) {
+                        twoPlayerObstacleSpawnRate *= 1.2;
+                        twoPlayerInvincibilityBallSpawnRate *= 1.2;
+                        twoPlayerGoldBallSpawnRate *= 1.2;
+                    }
+                } else {
+                    obstacle.style.top = `${currentTop + twoPlayerFallSpeed}px`;
+                    checkTwoPlayerCollision(obstacle, index);
+                }
+            });
+        };
+
+        const updateInvincibilityBalls = () => {
+            invincibilityBalls.forEach((ball, index) => {
+                const currentTop = parseInt(ball.style.top);
+                if (currentTop > gameContainer.clientHeight) {
+                    gameContainer.removeChild(ball);
+                    invincibilityBalls.splice(index, 1);
+                } else {
+                    ball.style.top = `${currentTop + fallSpeed}px`;
+                    checkBallCollision(ball, index);
+                }
+            });
+        };
+
+        const updateTwoPlayerInvincibilityBalls = () => {
+            twoPlayerInvincibilityBalls.forEach((ball, index) => {
+                const currentTop = parseInt(ball.style.top);
+                const container = ball.parentElement;
+                
+                if (currentTop > container.clientHeight) {
+                    container.removeChild(ball);
+                    twoPlayerInvincibilityBalls.splice(index, 1);
+                } else {
+                    ball.style.top = `${currentTop + twoPlayerFallSpeed}px`;
+                    checkTwoPlayerBallCollision(ball, index);
+                }
+            });
+        };
+
+        const updateGoldBalls = () => {
+            goldBalls.forEach((goldBall, index) => {
+                const currentTop = parseInt(goldBall.style.top);
+                if (currentTop > gameContainer.clientHeight) {
+                    gameContainer.removeChild(goldBall);
+                    goldBalls.splice(index, 1);
+                } else {
+                    goldBall.style.top = `${currentTop + fallSpeed}px`;
+                    checkGoldBallCollision(goldBall, index);
+                }
+            });
+        };
+
+        const updateTwoPlayerGoldBalls = () => {
+            twoPlayerGoldBalls.forEach((goldBall, index) => {
+                const currentTop = parseInt(goldBall.style.top);
+                const container = goldBall.parentElement;
+                
+                if (currentTop > container.clientHeight) {
+                    container.removeChild(goldBall);
+                    twoPlayerGoldBalls.splice(index, 1);
+                } else {
+                    goldBall.style.top = `${currentTop + twoPlayerFallSpeed}px`;
+                    checkTwoPlayerGoldBallCollision(goldBall, index);
+                }
+            });
+        };
+
+        const checkCollision = (obstacle, index) => {
+            if (invincible) return;
+            const playerRect = player.getBoundingClientRect();
+            const obstacleRect = obstacle.getBoundingClientRect();
+
+            if (playerRect.left < obstacleRect.right && playerRect.right > obstacleRect.left &&
+                playerRect.top < obstacleRect.bottom && playerRect.bottom > obstacleRect.top) {
+                loseLife();
+            }
+        };
+
+        const checkTwoPlayerCollision = (obstacle, index) => {
+            const container = obstacle.parentElement;
+            let playerRect, playerInvincible, playerLives;
+            
+            if (container.id === 'player1Area') {
+                playerRect = player1.getBoundingClientRect();
+                playerInvincible = player1Invincible;
+                playerLives = player1Lives;
+            } else {
+                playerRect = player2.getBoundingClientRect();
+                playerInvincible = player2Invincible;
+                playerLives = player2Lives;
+            }
+            
+            const obstacleRect = obstacle.getBoundingClientRect();
+
+            if (playerInvincible) return;
+            
+            if (playerRect.left < obstacleRect.right && playerRect.right > obstacleRect.left &&
+                playerRect.top < obstacleRect.bottom && playerRect.bottom > obstacleRect.top) {
+                if (playerLives > 0) {
+                    if (container.id === 'player1Area') {
+                        player1Lives--;
+                        activatePlayer1Invincibility();
+                    } else {
+                        player2Lives--;
+                        activatePlayer2Invincibility();
+                    }
+                    saveUserData();
+                    alert("Player " + (container.id === 'player1Area' ? "1" : "2") + " lost a life! Continuing...");
+                } else {
+                    if (container.id === 'player1Area') {
+                        endTwoPlayerGame("Player 2 wins!");
+                    } else {
+                        endTwoPlayerGame("Player 1 wins!");
+                    }
+                }
+            }
+        };
+
+        const checkBallCollision = (ball, index) => {
+            const playerRect = player.getBoundingClientRect();
+            const ballRect = ball.getBoundingClientRect();
+
+            if (playerRect.left < ballRect.right && playerRect.right > ballRect.left &&
+                playerRect.top < ballRect.bottom && playerRect.bottom > ballRect.top) {
+                activateInvincibility();
+                gameContainer.removeChild(ball);
+                invincibilityBalls.splice(index, 1);
+            }
+        };
+
+        const checkTwoPlayerBallCollision = (ball, index) => {
+            const container = ball.parentElement;
+            let playerRect;
+            
+            if (container.id === 'player1Area') {
+                playerRect = player1.getBoundingClientRect();
+            } else {
+                playerRect = player2.getBoundingClientRect();
+            }
+            
+            const ballRect = ball.getBoundingClientRect();
+
+            if (playerRect.left < ballRect.right && playerRect.right > ballRect.left &&
+                playerRect.top < ballRect.bottom && playerRect.bottom > ballRect.top) {
+                if (container.id === 'player1Area') {
+                    activatePlayer1Invincibility();
+                } else {
+                    activatePlayer2Invincibility();
+                }
+                container.removeChild(ball);
+                twoPlayerInvincibilityBalls.splice(index, 1);
+            }
+        };
+
+        const checkGoldBallCollision = (goldBall, index) => {
+            const playerRect = player.getBoundingClientRect();
+            const goldBallRect = goldBall.getBoundingClientRect();
+
+            if (playerRect.left < goldBallRect.right && playerRect.right > goldBallRect.left &&
+                playerRect.top < goldBallRect.bottom && playerRect.bottom > goldBallRect.top) {
+                bestScore += 50; 
+                saveUserData();
+                updateBestScoreDisplay(); 
+                gameContainer.removeChild(goldBall);
+                goldBalls.splice(index, 1);
+            }
+        };
+
+        const checkTwoPlayerGoldBallCollision = (goldBall, index) => {
+            const container = goldBall.parentElement;
+            let playerRect;
+            
+            if (container.id === 'player1Area') {
+                playerRect = player1.getBoundingClientRect();
+            } else {
+                playerRect = player2.getBoundingClientRect();
+            }
+            
+            const goldBallRect = goldBall.getBoundingClientRect();
+
+            if (playerRect.left < goldBallRect.right && playerRect.right > goldBallRect.left &&
+                playerRect.top < goldBallRect.bottom && playerRect.bottom > goldBallRect.top) {
+                if (container.id === 'player1Area') {
+                    player1Score += 50;
+                    player1ScoreDisplay.textContent = `Player 1: ${player1Score}`;
+                    if (player1Score > player1BestScore) {
+                        player1BestScore = player1Score;
+                        player1ShopBestScore.textContent = player1BestScore;
+                        saveUserData();
+                    }
+                } else {
+                    player2Score += 50;
+                    player2ScoreDisplay.textContent = `Player 2: ${player2Score}`;
+                    if (player2Score > player2BestScore) {
+                        player2BestScore = player2Score;
+                        player2ShopBestScore.textContent = player2BestScore;
+                        saveUserData();
+                    }
+                }
+                container.removeChild(goldBall);
+                twoPlayerGoldBalls.splice(index, 1);
+            }
+        };
+
+        const activateInvincibility = () => {
+            invincible = true;
+            invincibilityTime = 2; // 2 seconds of invincibility
+            timerDisplay.textContent = `Invincibility: ${invincibilityTime}`;
+            clearInterval(invincibilityInterval);
+            invincibilityInterval = setInterval(() => {
+                if (invincibilityTime > 0) {
+                    invincibilityTime--;
+                    timerDisplay.textContent = `Invincibility: ${invincibilityTime}`;
+                } else {
+                    invincible = false;
+                    clearInterval(invincibilityInterval);
+                    timerDisplay.textContent = 'Invincibility: 0';
+                }
+            }, 1000);
+        };
+
+        const activatePlayer1Invincibility = () => {
+            player1Invincible = true;
+            player1InvincibilityTime = 2;
+            clearInterval(player1InvincibilityInterval);
+            player1InvincibilityInterval = setInterval(() => {
+                if (player1InvincibilityTime > 0) {
+                    player1InvincibilityTime--;
+                } else {
+                    player1Invincible = false;
+                    clearInterval(player1InvincibilityInterval);
+                }
+            }, 1000);
+        };
+
+        const activatePlayer2Invincibility = () => {
+            player2Invincible = true;
+            player2InvincibilityTime = 2;
+            clearInterval(player2InvincibilityInterval);
+            player2InvincibilityInterval = setInterval(() => {
+                if (player2InvincibilityTime > 0) {
+                    player2InvincibilityTime--;
+                } else {
+                    player2Invincible = false;
+                    clearInterval(player2InvincibilityInterval);
+                }
+            }, 1000);
+        };
+
+        const loseLife = () => {
+            if (lives > 0) {
+                lives--;
+                livesDisplay.textContent = `Lives: ${lives}`;
+                alert("You lost a life! Continuing...");
+
+                // Activate invincibility for 2 seconds
+                activateInvincibility();
+
+                // Save lives to local storage
+                saveUserData();
+            } else {
+                endGame();
+            }
+        };
+
+        const endGame = () => {
+            gameOver = true;
+            gameOverMessage.style.display = 'block';
+            saveUserData();
+        };
+
+        const endTwoPlayerGame = (message) => {
+            twoPlayerGameOver = true;
+            twoPlayerGameOverMessageText.innerHTML = `${message}<br><br>Player 1 Score: ${player1Score}<br>Player 2 Score: ${player2Score}`;
+            twoPlayerGameOverMessage.style.display = 'block';
+            
+            // Update best scores
+            if (player1Score > player1BestScore) {
+                player1BestScore = player1Score;
+            }
+            if (player2Score > player2BestScore) {
+                player2BestScore = player2Score;
+            }
+            saveUserData();
+        };
+
+        const restartGame = () => {
+            gameOver = false;
+            score = 0;
+            fallSpeed = 5;
+            obstacleSpawnRate = 0.05;
+            invincibilityBallSpawnRate = 0.005;
+            goldBallSpawnRate = 0.01;  
+            invincible = false;
+            invincibilityTime = 0;
+            scoreDisplay.textContent = 'Score: 0';
+            timerDisplay.textContent = 'Invincibility: 0';
+            livesDisplay.textContent = `Lives: ${lives}`;
+            gameOverMessage.style.display = 'none';
+            obstacles.forEach(obstacle => gameContainer.removeChild(obstacle));
+            invincibilityBalls.forEach(ball => gameContainer.removeChild(ball));
+            goldBalls.forEach(goldBall => gameContainer.removeChild(goldBall));
+            obstacles = [];
+            invincibilityBalls = [];
+            goldBalls = [];
+            player.style.left = '0px';
+            player.style.top = '0px';
+            gameLoop();
+        };
+
+        const restartTwoPlayerGame = () => {
+            twoPlayerGameOver = false;
+            player1Score = 0;
+            player2Score = 0;
+            twoPlayerFallSpeed = 5;
+            twoPlayerObstacleSpawnRate = 0.05;
+            twoPlayerInvincibilityBallSpawnRate = 0.005;
+            twoPlayerGoldBallSpawnRate = 0.01;
+            player1Invincible = false;
+            player2Invincible = false;
+            player1InvincibilityTime = 0;
+            player2InvincibilityTime = 0;
+            player1ScoreDisplay.textContent = 'Player 1: 0';
+            player2ScoreDisplay.textContent = 'Player 2: 0';
+            twoPlayerGameOverMessage.style.display = 'none';
+            
+            // Clear all game elements
+            twoPlayerObstacles.forEach(obstacle => {
+                if (obstacle.parentElement) {
+                    obstacle.parentElement.removeChild(obstacle);
+                }
+            });
+            twoPlayerInvincibilityBalls.forEach(ball => {
+                if (ball.parentElement) {
+                    ball.parentElement.removeChild(ball);
+                }
+            });
+            twoPlayerGoldBalls.forEach(goldBall => {
+                if (goldBall.parentElement) {
+                    goldBall.parentElement.removeChild(goldBall);
+                }
+            });
+            
+            twoPlayerObstacles = [];
+            twoPlayerInvincibilityBalls = [];
+            twoPlayerGoldBalls = [];
+            
+            // Reset player positions
+            const player1Area = document.getElementById('player1Area');
+            const player2Area = document.getElementById('player2Area');
+            
+            player1Position = {
+                x: player1Area.clientWidth / 2 - 15,
+                y: player1Area.clientHeight / 2 - 15
+            };
+            
+            player2Position = {
+                x: player2Area.clientWidth / 2 - 15,
+                y: player2Area.clientHeight / 2 - 15
+            };
+            
+            player1.style.left = `${player1Position.x}px`;
+            player1.style.top = `${player1Position.y}px`;
+            player2.style.left = `${player2Position.x}px`;
+            player2.style.top = `${player2Position.y}px`;
+            
+            twoPlayerGameLoop();
+        };
+
+        const gameLoop = () => {
+            if (!gameOver) {
+                updateObstacles();
+                updateInvincibilityBalls();
+                updateGoldBalls(); 
+
+                if (Math.random() < obstacleSpawnRate) {
+                    obstacles.push(createObstacle(gameContainer));
+                }
+
+                if (Math.random() < invincibilityBallSpawnRate) {
+                    invincibilityBalls.push(createInvincibilityBall(gameContainer));
+                }
+
+                if (Math.random() < goldBallSpawnRate) { 
+                    goldBalls.push(createGoldBall(gameContainer));
+                }
+
+                requestAnimationFrame(gameLoop);
+            }
+        };
+
+        const twoPlayerGameLoop = () => {
+            if (!twoPlayerGameOver) {
+                movePlayerWithKeys();
+                updateTwoPlayerObstacles();
+                updateTwoPlayerInvincibilityBalls();
+                updateTwoPlayerGoldBalls();
+
+                // Spawn obstacles for both players
+                if (Math.random() < twoPlayerObstacleSpawnRate) {
+                    const player1Area = document.getElementById('player1Area');
+                    const player2Area = document.getElementById('player2Area');
+                    
+                    // Randomly choose which player gets the obstacle (or both)
+                    const rand = Math.random();
+                    if (rand < 0.5) {
+                        twoPlayerObstacles.push(createObstacle(player1Area));
+                    } else {
+                        twoPlayerObstacles.push(createObstacle(player2Area));
+                    }
+                }
+
+                if (Math.random() < twoPlayerInvincibilityBallSpawnRate) {
+                    const player1Area = document.getElementById('player1Area');
+                    const player2Area = document.getElementById('player2Area');
+                    
+                    // Randomly choose which player gets the invincibility ball
+                    if (Math.random() < 0.5) {
+                        twoPlayerInvincibilityBalls.push(createInvincibilityBall(player1Area));
+                    } else {
+                        twoPlayerInvincibilityBalls.push(createInvincibilityBall(player2Area));
+                    }
+                }
+
+                if (Math.random() < twoPlayerGoldBallSpawnRate) {
+                    const player1Area = document.getElementById('player1Area');
+                    const player2Area = document.getElementById('player2Area');
+                    
+                    // Randomly choose which player gets the gold ball
+                    if (Math.random() < 0.5) {
+                        twoPlayerGoldBalls.push(createGoldBall(player1Area));
+                    } else {
+                        twoPlayerGoldBalls.push(createGoldBall(player2Area));
+                    }
+                }
+
+                requestAnimationFrame(twoPlayerGameLoop);
+            }
+        };
+
+        // Shop tab switching
+        shopTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                shopTabs.forEach(t => t.classList.remove('active'));
+                shopContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                const tabName = tab.dataset.tab;
+                document.getElementById(`${tabName}ShopContent`).classList.add('active');
+            });
+        });
+
+        // Event Listeners
+        showLogin.addEventListener('click', showLoginForm);
+        showSignup.addEventListener('click', showSignupForm);
+        loginBtn.addEventListener('click', login);
+        signupBtn.addEventListener('click', signup);
+        logoutBtn.addEventListener('click', logout);
+        deleteAccountBtn.addEventListener('click', deleteAccount);
+        doodaLoginBtn.addEventListener('click', showAccountPicker);
+        cancelAccountPicker.addEventListener('click', hideAccountPicker);
+
+        gameContainer.addEventListener('mousemove', movePlayer);
+        startGameBtn.addEventListener('click', startGame);
+        startTwoPlayerGameBtn.addEventListener('click', () => {
+            isTwoPlayerMode = true;
+            mainMenu.style.display = 'none';
+            twoPlayerMenu.style.display = 'block';
+        });
+        twoPlayerStartBtn.addEventListener('click', showTwoPlayerGame);
+        showInstructionsBtn.addEventListener('click', showInstructions);
+        twoPlayerShowInstructionsBtn.addEventListener('click', showInstructions);
+        showShopBtn.addEventListener('click', showShop);
+        twoPlayerShowShopBtn.addEventListener('click', showTwoPlayerShop);
+        buyExtraLifeBtn.addEventListener('click', buyExtraLife);
+        buyPlayer1ExtraLifeBtn.addEventListener('click', buyPlayer1ExtraLife);
+        buyPlayer2ExtraLifeBtn.addEventListener('click', buyPlayer2ExtraLife);
+        useSecretCodeBtn.addEventListener('click', useSecretCode);
+        useTwoPlayerSecretCodeBtn.addEventListener('click', useTwoPlayerSecretCode);
+        hideShopBtn.addEventListener('click', hideShop);
+        hideTwoPlayerShopBtn.addEventListener('click', hideTwoPlayerShop);
+        restartGameBtn.addEventListener('click', restartGame);
+        restartTwoPlayerGameBtn.addEventListener('click', restartTwoPlayerGame);
+        returnToMainMenuBtn.addEventListener('click', returnToMainMenu);
+        returnToTwoPlayerMenuBtn.addEventListener('click', returnToTwoPlayerMenu);
+        twoPlayerBackBtn.addEventListener('click', returnToMainMenuFromTwoPlayer);
+        hideInstructionsBtn.addEventListener('click', hideInstructions);
+
+        // Keyboard event listeners for two-player mode
+        window.addEventListener('keydown', (e) => {
+            if (e.key in keys) {
+                keys[e.key] = true;
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key in keys) {
+                keys[e.key] = false;
+            }
+        });
+
+        // Initialize
+        showLoginForm();
+    </script>
+</body>
+</html>
